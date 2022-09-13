@@ -1,12 +1,11 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 public class Warriors extends Thread {
     ArrayList<String> visibleThings;
-    ArrayList<Integer> location = new ArrayList<Integer>();
-    ArrayList<Integer> nextlocation = new ArrayList<Integer>();
+    int[]location={0,0};
+    int[]nextlocation={0,0};
     int maxStep=1;
     boolean win=false;
     boolean loss=false;
@@ -21,21 +20,20 @@ public class Warriors extends Thread {
         visibleThings= new ArrayList<String>(Arrays.asList("WARRIOR","S_WARRIOR","OutOfPlayGround"));
 
     }
-    public ArrayList<Integer> randomStartPoint(String zeroLineXorY) {
-        ArrayList<Integer> cordinate = new ArrayList<Integer>(2);
+    public int [] randomStartPoint(String zeroLineXorY) {
+        int[]cordinate = {0,0};
         //int[] cordinate=new int[2];
         if (zeroLineXorY=="X"){
             Random randI = new Random();
             int myRandInt = randI.nextInt(plane[0].length);
-            cordinate.add(0, 0);
-            cordinate.add(1,( myRandInt));
+            cordinate[0]=0;
+            cordinate[1]=( myRandInt);
         }
         if (zeroLineXorY=="Y"){
             Random randI = new Random();
             int myRandInt = randI.nextInt(plane[0].length);
-            cordinate.add(1, 0);
-            cordinate.add(0, (myRandInt));
-            
+            cordinate[0]=( myRandInt);
+            cordinate[1]=0;
         }
         return cordinate;
     }
@@ -44,11 +42,11 @@ public class Warriors extends Thread {
         boolean i=true;
         while (i){
             location=randomStartPoint("Y");
-            if (plane[location.get(1)][location.get(0)]==null){
+            if (plane[location[1]][location[0]]==null){
                 if(binocular){
-                    plane[location.get(1)][location.get(0)]="S_WARRIOR";
+                    plane[location[1]][location[0]]="S_WARRIOR";
                 }else{
-                    plane[location.get(1)][location.get(0)]="WARRIOR";
+                    plane[location[1]][location[0]]="WARRIOR";
                 } 
                 i=false;
             }else{
@@ -56,10 +54,10 @@ public class Warriors extends Thread {
             }
         }
     }
-    private String check( List<Integer> point) {
+    private String check( int[] point) {
         String result=null;
         try {
-            result=plane[point.get(1)][point.get(0)];
+            result=plane[point[1]][point[0]];
         } catch (Exception e) {
             result="OutOfPlayGround";
         }
@@ -68,42 +66,39 @@ public class Warriors extends Thread {
     }
     private void  stepForword() {
         message="NO";
-        ArrayList<Integer> selector = new ArrayList<Integer>();
-        ArrayList<ArrayList<Integer>> aroundCordinate = new ArrayList<>();
-        ArrayList<Integer> nextTemplocation = new ArrayList<Integer>(2);
-        //int [] nextTemplocation= new int[2];
-        //int[][] aroundCordinate= new int[4][2];
+        ArrayList<Integer> selector = new ArrayList<Integer>(Arrays.asList(0,1,2,3));
+        int[][] aroundCordinate = {{0,0},{0,0},{0,0},{0,0}};
+        int[] nextTemplocation = {0,0};
         String [] aroundPoints =new String[4]; //X+Y+X-Y-
-        selector.add(0);selector.add(1);selector.add(2);selector.add(3);
         Collections.shuffle(selector);
         for(int i :selector){
             if (i==0) {
-                nextTemplocation.add(0, (location.get(0)+maxStep));
-                nextTemplocation.add(1, (location.get(1)));
+                nextTemplocation[0]=(location[0]+maxStep);
+                nextTemplocation[1]=(location[1]);
                 aroundPoints[i]=check(nextTemplocation);
-                aroundCordinate.add(i, nextTemplocation);
+                aroundCordinate[i][0]= nextTemplocation[0];aroundCordinate[i][1]= nextTemplocation[1];
             }
             if (i==1) {
-                nextTemplocation.add(0, (location.get(0)));
-                nextTemplocation.add(1, (location.get(1)+maxStep));
+                nextTemplocation[0]=(location[0]);
+                nextTemplocation[1]=(location[1]+maxStep);
                 aroundPoints[i]=check(nextTemplocation);
-                aroundCordinate.add(i, nextTemplocation);
+                aroundCordinate[i][0]= nextTemplocation[0];aroundCordinate[i][1]= nextTemplocation[1];
             }
             if (i==2) {
-                nextTemplocation.add(0, (location.get(0)-maxStep));
-                nextTemplocation.add(1, (location.get(1)));
+                nextTemplocation[0]=(location[0]-maxStep);
+                nextTemplocation[1]=(location[1]);
                 aroundPoints[i]=check(nextTemplocation);
-                aroundCordinate.add(i, nextTemplocation);
+                aroundCordinate[i][0]= nextTemplocation[0];aroundCordinate[i][1]= nextTemplocation[1];
             }
             if (i==3) {
-                nextTemplocation.add(0, (location.get(0)));
-                nextTemplocation.add(1, (location.get(1)-maxStep));
+                nextTemplocation[0]=(location[0]);
+                nextTemplocation[1]=(location[1]-maxStep);
                 aroundPoints[i]=check(nextTemplocation);
-                aroundCordinate.add(i, nextTemplocation);
+                aroundCordinate[i][0]= nextTemplocation[0];aroundCordinate[i][1]= nextTemplocation[1];
             }
         }
         for (int i : selector) {
-            if (location.get(0)==targetX && location.get(1)==targetY){
+            if (location[0]==targetX && location[1]==targetY){
                 win=true;
                 break;}
             
@@ -114,24 +109,25 @@ public class Warriors extends Thread {
                 if(aroundPoints[i]=="MODO"){
                     win=true;
                     message="MODO+S_WARRIOR";
-                    plane[location.get(1)][location.get(0)]=null;
-                    nextlocation.clear();nextlocation.addAll(aroundCordinate.get(i));
-                    location.clear();location.addAll(aroundCordinate.get(i));
+                    plane[location[1]][location[0]]=null;
+                    nextlocation[0]=aroundCordinate[i][0];nextlocation[1]=aroundCordinate[i][1];
+                    location[0]=aroundCordinate[i][0];location[1]=aroundCordinate[i][1];
                     break;
                 }
                 if(aroundPoints[i]=="MONSTER"){
                     loss=true;
                     message="MONSTER+S_WARRIOR";
-                    plane[location.get(1)][location.get(0)]=null;
-                    nextlocation.clear();nextlocation.addAll(aroundCordinate.get(i));
+                    plane[location[1]][location[0]]=null;
+                    nextlocation[0]=aroundCordinate[i][0];nextlocation[1]=aroundCordinate[i][1];
+                    location[0]=aroundCordinate[i][0];location[1]=aroundCordinate[i][1];
                     break;
                 }
                 if(aroundPoints[i]==null){
                     message="YES";
-                    plane[location.get(1)][location.get(0)]=null;
-                    nextlocation.clear();nextlocation.addAll(aroundCordinate.get(i));
-                    location.clear();location.addAll(aroundCordinate.get(i));
-                    plane[location.get(1)][location.get(0)]="S_WARRIOR";
+                    plane[location[1]][location[0]]=null;
+                    nextlocation[0]=aroundCordinate[i][0];nextlocation[1]=aroundCordinate[i][1];
+                    location[0]=aroundCordinate[i][0];location[1]=aroundCordinate[i][1];
+                    plane[location[1]][location[0]]="S_WARRIOR";
                     break;
                 }
             
@@ -142,32 +138,33 @@ public class Warriors extends Thread {
                 if(aroundPoints[i]=="MODO"){
                     win=true;
                     message="MODO+WARRIOR";
-                    plane[location.get(1)][location.get(0)]=null;
-                    nextlocation.clear();nextlocation.addAll(aroundCordinate.get(i));
-                    location.clear();location.addAll(aroundCordinate.get(i));
+                    plane[location[1]][location[0]]=null;
+                    nextlocation[0]=aroundCordinate[i][0];nextlocation[1]=aroundCordinate[i][1];
+                    location[0]=aroundCordinate[i][0];location[1]=aroundCordinate[i][1];
                     break;
                 }
                 if(aroundPoints[i]=="MONSTER"){
                     loss=true;
                     message="MONSTER+WARRIOR";
-                    plane[location.get(1)][location.get(0)]=null;
-                    nextlocation.clear();nextlocation.addAll(aroundCordinate.get(i));
+                    plane[location[1]][location[0]]=null;
+                    nextlocation[0]=aroundCordinate[i][0];nextlocation[1]=aroundCordinate[i][1];
+                    location[0]=aroundCordinate[i][0];location[1]=aroundCordinate[i][1];
                     break;
                 }
                 if(aroundPoints[i]=="TREE"){
-                    loss=true;
-                    message="TREE+WARRIOR";
-                    plane[location.get(1)][location.get(0)]=null;
+                    loss=false;
+                    message="TREE+WARRIOR+ReStarted";
+                    plane[location[1]][location[0]]=null;
                     setWarrior();
-                    nextlocation.clear();nextlocation.addAll(aroundCordinate.get(i));
+                    nextlocation[0]=aroundCordinate[i][0];nextlocation[1]=aroundCordinate[i][1];
                     break;
                 }
                 if(aroundPoints[i]==null){
                     message="YES";
-                    plane[location.get(1)][location.get(0)]=null;
-                    nextlocation.clear();nextlocation.addAll(aroundCordinate.get(i));
-                    location.clear();location.addAll(aroundCordinate.get(i));
-                    plane[location.get(1)][location.get(0)]="WARRIOR";
+                    plane[location[1]][location[0]]=null;
+                    nextlocation[0]=aroundCordinate[i][0];nextlocation[1]=aroundCordinate[i][1];
+                    location[0]=aroundCordinate[i][0];location[1]=aroundCordinate[i][1];
+                    plane[location[1]][location[0]]="WARRIOR";
                     break;
                 }
             }
@@ -180,13 +177,14 @@ public class Warriors extends Thread {
             if (win||loss) {
                 System.out.println(win);
                 System.out.println(loss);
+                System.out.println(message);
                 break;
             }else{
+                System.out.println(message);
                 stepForword();
                 try {
-                    sleep(1000);
+                    sleep(10);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
                 continue;
             }   

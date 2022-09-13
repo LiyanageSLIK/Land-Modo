@@ -21,7 +21,7 @@ public class Main {
             
         }
         for (int i = 0; i < warriorList.length; i++) {
-            warriorList[i].start();
+            warriorList[i].run();
         }
         
         pGround.PlayGroundVisualizer(pGround.play_ground);
