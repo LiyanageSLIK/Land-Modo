@@ -3,6 +3,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 public class Warriors extends Thread {
+    public static boolean game_win=false;
+    
     ArrayList<String> visibleThings;
     int[]location={0,0};
     int[]nextlocation={0,0};
@@ -64,7 +66,7 @@ public class Warriors extends Thread {
         return result;
 
     }
-    private void  stepForword() {
+    private synchronized void  stepForword() {
         message="NO";
         ArrayList<Integer> selector = new ArrayList<Integer>(Arrays.asList(0,1,2,3));
         int[][] aroundCordinate = {{0,0},{0,0},{0,0},{0,0}};
@@ -173,20 +175,36 @@ public class Warriors extends Thread {
 
     
     public void run() {
-        while (true) {
+        while (!game_win) {
+            
+            try {
+                synchronized(this){
+                    Thread.sleep(100);
+                    PlayGround.PlayGroundVisualizer(plane);
+                    System.out.println("\n");
+                    Thread.sleep(100);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
             if (win||loss) {
-                System.out.println(win);
-                System.out.println(loss);
-                System.out.println(message);
+                // System.out.println(win);
+                // System.out.println(loss);
+                // System.out.println(message);
+                if (win){
+                    game_win=true;
+                }
                 break;
             }else{
-                System.out.println(message);
-                stepForword();
+                // System.out.println(message);
+                
                 try {
-                    sleep(10);
-                } catch (InterruptedException e) {
-                }
-                continue;
+                    sleep(1000);
+                    stepForword();
+                    continue;
+                } catch (InterruptedException e) {}
+                
             }   
         }    
     }

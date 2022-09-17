@@ -1,4 +1,5 @@
 public class Main {
+    
     public static void main(String[] args) {
         PlayGround pGround = new PlayGround(10, 10);
         StaticObjects.setModo(5, 6,pGround.play_ground);
@@ -21,12 +22,13 @@ public class Main {
             
         }
         for (int i = 0; i < warriorList.length; i++) {
-            warriorList[i].run();
+            warriorList[i].start();
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        
-        pGround.PlayGroundVisualizer(pGround.play_ground);
-        // System.out.println(WARRIOR_1.nextlocation[0]+","+WARRIOR_1.nextlocation[1]);
-        System.out.println(warriorList[1].message);
-        System.out.println((warriorList[1].location));
+       
     }
 }

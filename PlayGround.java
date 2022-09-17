@@ -9,7 +9,7 @@ public class PlayGround {
         play_ground =new String[yaxis][xaxis];
     }
     
-    public void PlayGroundVisualizer(Object arr[][]) {
+    public static void PlayGroundVisualizer(Object arr[][]) {
         for(int i = ((arr[0].length)-1); i>=0; i--){
             System.out.println("");
             System.out.println("");
